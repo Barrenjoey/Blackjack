@@ -1,30 +1,25 @@
-"""Blackjack Text-game
-1x Dealer
-1x Player
-4x Computer players 
-4X Decks of cards
-
-Funcs- Shuffle, draw, hit, stay, bust, newgame
+"""___Blackjack Text-game___
+This is a simple BlackJack text-game. The idea is to apply the logic of the game in
+a functional programming style.
 """
 import random
 import sys
 import os
+import time 
 
-cards = []
-dealer = []
 count = 0
 
 def count_cards(card,count):
 	count = 0
-	values = {("Ac","Ah","As","Ad","Kc","Kh","Ks","Kd","Qc","Qh","Qs","Qd","Jc","Jh","Js","Jd","10c","10h","10s","10d"):10,
+	values = {("Ac","Ah","As","Ad"):11,("Kc","Kh","Ks","Kd","Qc","Qh","Qs","Qd","Jc","Jh","Js","Jd","10c","10h","10s","10d"):10,
 	("9c","9h","9s","9d"):9,("8c","8h","8s","8d"):8,("7c","7h","7s","7d"):7,("6c","6h","6s","6d"):6,("5c","5h","5s","5d"):5,
 	("4c","4h","4s","4d"):4,("3c","3h","3s","3d"):3,("2c","2h","2s","2d"):2}
-	print(card)
+	#print(card)
 	for keys in values.keys():
 		for key in keys:
 			if key in card:
 				count += values.get(keys)
-	print(count)			
+	#print(count)
 	return count
 	
 def deck():
@@ -50,7 +45,7 @@ def shuffle():
 
 def draw_game(cards,dealer):
 	deck = shuffle()
-	print(deck)
+	#print(deck)
 	deck = deal(cards,dealer,deck)
 	cards = deck[0]
 	dealer = deck[1]
@@ -68,9 +63,6 @@ def deal(cards,dealer,deck):
 	dealer.append(deck[0])
 	deck.pop(0)
 	count1 = count_cards(cards,count)
-	# print(cards)
-	# print(dealer)
-	# print(deck)
 	return cards,dealer,deck,count1
 
 def hit(cards,dealer,deck,count):
@@ -93,13 +85,22 @@ def bust(count):
 		print("")
 		play_again()
 		
-def play_again(): #Need to reset the score etc if playing again.
-	answer = input("Would you like to play again (y/n)? ")
-	if answer == 'y':
-		blackjack()
-	else:
-		quit()
-		
+def ace(cards, dealer, count):
+	### Need to pass in cards and minus by 10 if count >21
+	### Need to do the same for dealer
+	### Need to implement a dealer_count 
+	
+def play_again():
+	selection = False
+	while not selection:
+		answer = input("Would you like to play again (y/n)? ")
+		if answer.lower() == 'y':
+			blackjack(name)
+		elif answer.lower() == 'n':
+			quit()
+		else:
+			print("Invalid Selection. Try Again.")
+
 def intro():
 	os.system('cls')
 	screen_text = "WELCOME TO MY BLACKJACK GAME!"
@@ -114,7 +115,9 @@ def menu(name,game):
 	os.system('cls')
 	cards = game[0]
 	count = game[3]
+	dealer = game[1]
 	bust(count)
+	ace(cards,dealer)
 	#print(game)
 	print("Hello " + name + "!")
 	print("")
@@ -142,9 +145,14 @@ def menu(name,game):
 	if choice == "2":
 		print(choice)
 		
-def blackjack():
-	name = intro()
+def blackjack(name):
+	cards = []
+	dealer = []
 	game = draw_game(cards,dealer)
 	menu(name,game)
-
-blackjack()
+	
+name = intro()
+blackjack(name)
+#Make Ace 11 or 1
+#Create logic for dealer staying or hitting.
+#Make winning event
