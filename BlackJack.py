@@ -38,6 +38,7 @@ def dealer_visible_count(dealer,dealer_count):
 	else:
 		dealer_viscount = dealer_count
 	return dealer_viscount
+	
 def deck():
 	deck = ["Ac","Ah","As","Ad","Kc","Kh","Ks","Kd","Qc","Qh","Qs","Qd","Jc","Jh","Js","Jd","10c","10h","10s","10d",
 	"9c","9h","9s","9d","8c","8h","8s","8d","7c","7h","7s","7d","6c","6h","6s","6d","5c","5h","5s","5d","4c","4h","4s","4d",
@@ -53,7 +54,12 @@ def set_name():
 def set_players():
 	players = input("How many players would you like to play with? ")
 	return players
-
+	
+def bankroll():
+	print()
+	chips = input("What bankroll would you like to play with? ")
+	return chips
+	
 def shuffle():
 	d = deck()
 	random.shuffle(d)
@@ -91,18 +97,6 @@ def hit(cards,dealer,deck,count,dealer_count):
 	counts = count_cards(cards,count,dealer,dealer_count)
 	count = counts[0]
 	return cards, dealer, deck, count, dealer_count
-	
-# def bust(count):
-	# if count > 21:
-		# print("")
-		# print("count: " + str(count))
-		# print("")
-		# print("BUST")
-		# print("BUST")
-		# print("BUST")
-		# print("BUST")
-		# print("")
-		# play_again()
 		
 def ace(cards, dealer, count, dealer_count):
 	aces = ["Ac","Ah","As","Ad"]
@@ -118,9 +112,16 @@ def dealer_turn(count, dealer_count, dealer, deck, cards):
 	if dealer_count < count:
 		game = dealer_hit(dealer,dealer_count, deck, count, cards)
 	else:
-		print()
-		print("Dealer has {0}. You have {1}. You Lose!!".format(dealer_count,count))
-		play_again()
+		if len(dealer) == 2:
+			print()
+			print("Dealer turned a: {}".format(dealer[1]))
+			print()
+			print("Dealer has {0}. You have {1}. You Lose!!".format(dealer_count,count))
+			play_again()
+		else:
+			print()
+			print("Dealer has {0}. You have {1}. You Lose!!".format(dealer_count,count))
+			play_again()
 	return game
 	
 def dealer_hit(dealer, dealer_count, deck, count, cards):	
@@ -150,6 +151,7 @@ def intro():
 	print (screen_text)
 	print("")
 	name = set_name()
+	chips = bankroll()
 	return name
 	#players = set_players()
 
@@ -204,13 +206,18 @@ def menu(name,game):
 		if dealer_count < 21:
 			game = dealer_turn(count, dealer_count, dealer, deck, cards)
 			menu(name,game)
-		elif dealer_count == 21:
+		elif dealer_count == 21 and count != 21:
 			print()
 			print("Dealer has 21. You Lose!")
+		elif dealer_count ==21 and count == 21:
+			print("You both have 21.")
+			print("It's a push!")
 		else:
 			print()
 			print("Dealer BUSTED!!!")
+			print()
 			print("YOU WIN!!!!!")
+			play_again()
 	if len(dealer) == 2:		
 		choice = input("Would you like to: \n 1.Hit \n 2.Stay \n\n: ")
 		if choice == "1":
@@ -228,6 +235,6 @@ def blackjack(name):
 	
 name = intro()
 blackjack(name)
-#Make tie situation event
-#Possibly add betting
+
+#Add betting
 #Add split/double down etc
