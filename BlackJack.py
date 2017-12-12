@@ -60,6 +60,25 @@ def bankroll():
 	chips = input("What bankroll would you like to play with? ")
 	return chips
 	
+def place_wager(chips):
+	#os.system('cls')
+	chips = int(chips)
+	if chips <= 0:
+		play_again()
+	print()
+	print("---------------------------------")
+	print()
+	print("Bankroll: " + str(chips))
+	selection = False
+	while not selection:
+		print()
+		wager = int(input("Place bet: "))
+		if wager <= chips:
+			chips -= wager
+			return chips, wager
+		else:
+			print("Invalid Selection. Try Again.")
+	
 def shuffle():
 	d = deck()
 	random.shuffle(d)
@@ -107,21 +126,28 @@ def ace(cards, dealer, count, dealer_count):
 			dealer_count -= 10
 	return count, dealer_count	
 
-def dealer_turn(count, dealer_count, dealer, deck, cards):
+def dealer_turn(count, dealer_count, dealer, deck, cards, chips, wager):
 	game = []
 	if dealer_count < count:
 		game = dealer_hit(dealer,dealer_count, deck, count, cards)
+	elif dealer_count == count and dealer_count < 21:
+		game = dealer_hit(dealer,dealer_count, deck, count, cards)
+	elif dealer_count == 21 and count == 21:
+		print("You both have 21.")
+		print("It's a push!")
+		chips += wager
+		blackjack(name,chips)
 	else:
 		if len(dealer) == 2:
 			print()
 			print("Dealer turned a: {}".format(dealer[1]))
 			print()
 			print("Dealer has {0}. You have {1}. You Lose!!".format(dealer_count,count))
-			play_again()
+			blackjack(name,chips)
 		else:
 			print()
 			print("Dealer has {0}. You have {1}. You Lose!!".format(dealer_count,count))
-			play_again()
+			blackjack(name,chips)
 	return game
 	
 def dealer_hit(dealer, dealer_count, deck, count, cards):	
@@ -138,7 +164,9 @@ def play_again():
 		print()
 		answer = input("Would you like to play again (y/n)? ")
 		if answer.lower() == 'y':
-			blackjack(name)
+			name = intro()
+			chips = bankroll()
+			blackjack(name,chips)
 		elif answer.lower() == 'n':
 			quit()
 		else:
@@ -151,11 +179,10 @@ def intro():
 	print (screen_text)
 	print("")
 	name = set_name()
-	chips = bankroll()
 	return name
 	#players = set_players()
 
-def menu(name,game):
+def menu(name,game,chips,wager):
 	os.system('cls')
 	cards = game[0]
 	count = game[3]
@@ -167,10 +194,15 @@ def menu(name,game):
 	dealer_count = aceScore[1]
 	#print(game)
 	dealer_viscount = dealer_visible_count(dealer,dealer_count)
-	print("")
+	print()
 	print("Hello " + name + "!")
-	print("")
-	print("")
+	print()
+	print("Bankroll: " + str(chips))
+	print()
+	print("Wager: " + str(wager))
+	print()
+	print("---------------------------------")
+	print()
 	if len(cards) == 2:
 		print("Your cards are: " + str(cards[0]) + ", " + str(cards[1]))
 	elif len(cards) == 3:
@@ -179,16 +211,16 @@ def menu(name,game):
 		print("Your cards are: " + str(cards[0]) + ", " + str(cards[1]) + ", " + str(cards[2]) + ", " + str(cards[3]))	
 	elif len(cards)	== 5:
 		print("Your cards are: " + str(cards[0]) + ", " + str(cards[1]) + ", " + str(cards[2]) + ", " + str(cards[3]) + ", " + str(cards[4]))
-	print("")
+	print()
 	print("Count: " + str(count))
-	print("")
+	print()
 	if count > 21:
 		print("BUST!")
 		print("BUST!")
 		print("BUST!")
-		play_again()
+		blackjack(name,chips)
 	print("---------------------------------")
-	print("")
+	print()
 	if len(dealer) == 2:
 		print("Dealer has: " + str(dealer[0]))
 	else:
@@ -196,45 +228,50 @@ def menu(name,game):
 		for i in dealer:
 			dealCards += (i + ', ') 
 		print("Dealer has: {}".format(dealCards)) 
-	print("")
-	print("Dealer Count: " + str(dealer_viscount))
-	print("")
+	print()
+	print("Count: " + str(dealer_viscount))
+	print()
 	print("---------------------------------")
-	print("")
-	print("")
+	print()
 	if len(dealer) != 2: 
 		if dealer_count < 21:
-			game = dealer_turn(count, dealer_count, dealer, deck, cards)
-			menu(name,game)
+			game = dealer_turn(count, dealer_count, dealer, deck, cards, chips, wager)
+			menu(name,game,chips,wager)
 		elif dealer_count == 21 and count != 21:
 			print()
 			print("Dealer has 21. You Lose!")
+			blackjack(name,chips)
 		elif dealer_count ==21 and count == 21:
 			print("You both have 21.")
 			print("It's a push!")
+			chips += wager
+			blackjack(name,chips)
 		else:
 			print()
 			print("Dealer BUSTED!!!")
 			print()
 			print("YOU WIN!!!!!")
-			play_again()
+			chips += (wager*2)
+			blackjack(name,chips)
 	if len(dealer) == 2:		
-		choice = input("Would you like to: \n 1.Hit \n 2.Stay \n\n: ")
+		choice = input("Would you like to: \n\n 1.Hit \n 2.Stay \n\n: ")
 		if choice == "1":
 			game = hit(game[0],game[1],game[2],game[3],game[4])
-			menu(name,game)
+			menu(name,game,chips,wager)
 		elif choice == "2":
-			game = dealer_turn(count, dealer_count, dealer, deck, cards)
-			menu(name, game)
+			game = dealer_turn(count, dealer_count, dealer, deck, cards, chips, wager)
+			menu(name,game,chips,wager)
 	
-def blackjack(name):
+def blackjack(name,chips):
 	cards = []
 	dealer = []
 	game = draw_game(cards,dealer)
-	menu(name,game)
-	
-name = intro()
-blackjack(name)
+	wager = place_wager(chips)
+	menu(name,game,wager[0],wager[1])
 
-#Add betting
+name = intro()
+chips = bankroll()
+blackjack(name,chips)
+
 #Add split/double down etc
+#Add blackjack payout
