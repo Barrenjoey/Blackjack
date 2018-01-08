@@ -1,6 +1,8 @@
 """___Blackjack Text-game___
-This is a simple BlackJack text-game. The idea is to apply the logic of the game in
-a functional programming style.
+This is a simple BlackJack text-game. The game is designed to express the logic of the blackjack
+game and does not offer any gui type interfaces, however it may be added in the future. The aim
+was to practice a functional style of programming with functions that could be shared for 
+different situations (and players).
 """
 import random
 import sys
@@ -17,14 +19,12 @@ def count_cards(cards,count,dealer,dealer_count):
 	("9c","9h","9s","9d"):9,("8c","8h","8s","8d"):8,("7c","7h","7s","7d"):7,("6c","6h","6s","6d"):6,("5c","5h","5s","5d"):5,
 	("4c","4h","4s","4d"):4,("3c","3h","3s","3d"):3,("2c","2h","2s","2d"):2}
 	count_cards.values = values
-	#print(card)
 	for keys in values.keys():
 		for key in keys:
 			if key in cards:
 				count += values.get(keys)
 			if key in dealer:
 				dealer_count += values.get(keys)
-	#print(count)
 	return count,dealer_count
 	
 def dealer_visible_count(dealer,dealer_count):
@@ -61,7 +61,6 @@ def bankroll():
 	return chips
 	
 def place_wager(chips):
-	#os.system('cls')
 	chips = int(chips)
 	if chips <= 0:
 		play_again()
@@ -86,7 +85,6 @@ def shuffle():
 
 def draw_game(cards,dealer):
 	deck = shuffle()
-	#print(deck)
 	deck = deal(cards,dealer,deck)
 	cards = deck[0]
 	dealer = deck[1]
@@ -105,7 +103,6 @@ def deal(cards,dealer,deck):
 	dealer.append(deck[0])
 	deck.pop(0)
 	count1 = count_cards(cards,count,dealer,dealer_count)
-	#print(count1)
 	count2 = count1[0]
 	count3 = count1[1]
 	return cards,dealer,deck,count2,count3
@@ -180,7 +177,6 @@ def intro():
 	print("")
 	name = set_name()
 	return name
-	#players = set_players()
 
 def menu(name,game,chips,wager):
 	os.system('cls')
@@ -192,7 +188,6 @@ def menu(name,game,chips,wager):
 	aceScore = ace(cards,dealer,count,dealer_count)
 	count = aceScore[0]
 	dealer_count = aceScore[1]
-	#print(game)
 	dealer_viscount = dealer_visible_count(dealer,dealer_count)
 	print()
 	print("Hello " + name + "!")
